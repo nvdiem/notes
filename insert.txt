@@ -1,0 +1,75 @@
+<?php
+function insertMultipleRows($tableName, $columns, $rows, $pdo)
+{
+    // Ensure $columns and $rows are arrays and not empty
+    if (empty($columns) || empty($rows) || !is_array($columns) || !is_array($rows)) {
+        throw new InvalidArgumentException('Columns and rows must be non-empty arrays.');
+    }
+
+    // Create column placeholders
+    $columnsPlaceholder = implode(', ', $columns);
+
+    // Create value placeholders
+    $placeholders = array_fill(0, count($columns), '?');
+    $valuePlaceholder = '(' . implode(', ', $placeholders) . ')';
+    $allPlaceholders = implode(', ', array_fill(0, count($rows), $valuePlaceholder));
+
+    // Flatten the rows array to match the placeholders
+    $flatValues = [];
+    foreach ($rows as $row) {
+        if (!is_array($row) || count($row) !== count($columns)) {
+            throw new InvalidArgumentException('Each row must be an array with the same number of elements as columns.');
+        }
+        foreach ($row as $value) {
+            $flatValues[] = $value;
+        }
+    }
+
+    // Construct the SQL query
+    $sql = "INSERT INTO $tableName ($columnsPlaceholder) VALUES $allPlaceholders";
+
+    // Prepare the statement
+    $stmt = $pdo->prepare($sql);
+
+    // Execute the statement with the flattened values
+    return $stmt->execute($flatValues);
+}
+
+// Example usage:
+try {
+    // Database connection details
+    $host = '127.0.0.1';
+    $db = 'your_database';
+    $user = 'your_username';
+    $pass = 'your_password';
+    $charset = 'utf8mb4';
+
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    // Create a new PDO instance
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    // Define the table name, columns, and rows to insert
+    $tableName = 'your_table';
+    $columns = ['column1', 'column2', 'column3'];
+    $rows = [
+        ['value1_1', 'value1_2', 'value1_3'],
+        ['value2_1', 'value2_2', 'value2_3'],
+        ['value3_1', 'value3_2', 'value3_3'],
+    ];
+
+    // Call the function to insert the rows
+    if (insertMultipleRows($tableName, $columns, $rows, $pdo)) {
+        echo "Rows inserted successfully!";
+    } else {
+        echo "Failed to insert rows.";
+    }
+} catch (PDOException $e) {
+    echo 'Connection failed: ' . $e->getMessage();
+}
+?>
