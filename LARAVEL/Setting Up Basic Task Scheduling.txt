@@ -1,0 +1,163 @@
+### Setting Up Basic Task Scheduling in Laravel 11 to Run Every Five Minutes
+
+1. **Install Laravel**:
+    ```bash
+    composer create-project --prefer-dist laravel/laravel scheduler-demo
+    cd scheduler-demo
+    ```
+
+2. **Set Up Database**:
+    - Configure your `.env` file with your database credentials:
+        ```plaintext
+        DB_CONNECTION=mysql
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_DATABASE=scheduler_demo
+        DB_USERNAME=root
+        DB_PASSWORD=secret
+        ```
+
+3. **Create a New Command**:
+    ```bash
+    php artisan make:command FiveMinuteTask
+    ```
+
+4. **Define Command Logic**:
+    - Open `app/Console/Commands/FiveMinuteTask.php` and update the `handle` method with the task logic:
+        ```php
+        namespace App\Console\Commands;
+
+        use Illuminate\Console\Command;
+
+        class FiveMinuteTask extends Command
+        {
+            protected $signature = 'task:five-minutes';
+            protected $description = 'Run task every five minutes';
+
+            public function __construct()
+            {
+                parent::__construct();
+            }
+
+            public function handle()
+            {
+                // Task logic here
+                $this->info('Five-minute task executed successfully.');
+            }
+        }
+        ```
+
+5. **Schedule the Command**:
+    - Open `app/Console/Kernel.php` and define the command schedule in the `schedule` method:
+        ```php
+        namespace App\Console;
+
+        use Illuminate\Console\Scheduling\Schedule;
+        use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+
+        class Kernel extends ConsoleKernel
+        {
+            protected function schedule(Schedule $schedule)
+            {
+                $schedule->command('task:five-minutes')->everyFiveMinutes();
+            }
+
+            protected function commands()
+            {
+                $this->load(__DIR__.'/Commands');
+
+                require base_path('routes/console.php');
+            }
+        }
+        ```
+
+6. **Register the Command**:
+    - Ensure the command is registered in `app/Console/Kernel.php` within the `commands` method:
+        ```php
+        protected function commands()
+        {
+            $this->load(__DIR__.'/Commands');
+
+            require base_path('routes/console.php');
+        }
+        ```
+
+7. **Test the Command Manually**:
+    ```bash
+    php artisan task:five-minutes
+    ```
+
+8. **Run the Scheduler**:
+    - Add the following cron entry to your server's crontab file:
+        ```plaintext
+        * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+        ```
+
+    - Edit crontab by running:
+        ```bash
+        crontab -e
+        ```
+
+    - Add the cron entry to run Laravel's scheduler every minute.
+
+### Summary of Steps
+
+1. **Create Laravel Project**
+    ```bash
+    composer create-project --prefer-dist laravel/laravel scheduler-demo
+    cd scheduler-demo
+    ```
+
+2. **Set Up Database**
+    ```plaintext
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=scheduler_demo
+    DB_USERNAME=root
+    DB_PASSWORD=secret
+    ```
+
+3. **Create Command**
+    ```bash
+    php artisan make:command FiveMinuteTask
+    ```
+
+4. **Define Command Logic**
+    ```php
+    public function handle()
+    {
+        // Task logic here
+        $this->info('Five-minute task executed successfully.');
+    }
+    ```
+
+5. **Schedule Command**
+    ```php
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('task:five-minutes')->everyFiveMinutes();
+    }
+    ```
+
+6. **Register Command**
+    ```php
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
+    ```
+
+7. **Test Command**
+    ```bash
+    php artisan task:five-minutes
+    ```
+
+8. **Run Scheduler**
+    ```plaintext
+    * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+    ```
+
+This setup ensures that your task runs every five minutes, leveraging Laravel's task scheduling capabilities in version 11.
