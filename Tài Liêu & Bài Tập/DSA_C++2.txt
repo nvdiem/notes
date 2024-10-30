@@ -1,0 +1,27 @@
+Đồ thị: https://www.hackerrank.com/dsa-11-2021-dfs-bfs-va-ung-dung
+Hàng đợi: https://www.hackerrank.com/dsa-11-2021-hang-doi
+Nội dung buổi học:
+Buổi	Nội dung
+1	Lý thuyết số
+2	Chữa bài tập lý thuyết số
+3	Lý thuyết số tiếp
+4	String, Vector
+5	Chữa bài tập String, Set
+6	Map và Pair
+7	Thuật toán Sinh : Sinh nhị phân, tổ hợp, hoán vị. Làm File Bài Tập SinhKeTiep trong Folder Bai Tap Ly Thuyet
+8	Giải bài tập file SinhKeTiep từ bài 1 tới bài 22.
+9	Chữa bài tập 23-30 file sinh kế tiếp. Lý thuyết mã gray ( bài 10, 11, 12). Sinh phân hoạch
+10	Quay lui phần lý thuyết : Làm bài tập file Quayluinhanhcan
+11	Tiếp tục lí thuyết quay lui, hoàn thành file Quayluinhanhcan
+12	Chữa bài tập file Quayluinhanhcanh từ bài 1 tới bài 14.
+13	Chữa bài tập file Quayluinhanhcanh từ bài 15 tới bài 21, hoàn thành file quaylui, làm file Sapxep_TimKiem
+14	Cách sử dụng hàm sort, lower_bound, upper_bound, binarysearch
+15	Chữa bài tập 1->20 file Sapxep_TimKiem
+16	Chữa bài tập sắp xếp
+17	Chữa bài tập sắp xếp
+18	Giải thuật tham lam, làm bài tập file ThamLam
+19	Giải bài tập tham lam
+20	Khái niệm về đồ thị, biểu diễn đồ thị trên máy tính
+21	DFS, BFS và ứng dụng
+22	Kiểm tra chu trình, đồ thị 2 phía, thuật toán Kahn, Sắp xếp topo, Khái niệm về cây
+23	Kiểm tra cây, đỉnh trụ, cạnh cầu, thuật toán kruskal, prim thì cây khung cực tiểu
