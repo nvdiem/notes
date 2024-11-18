@@ -443,107 +443,225 @@ for _ in range(T):
     # In ra kết quả cho mỗi bộ test
     print(res)
 #end
- 
-int k, m, n;
-set<string> dict;
-bool visited[100][100];
-vector<string> res;
-string s;
 
-void inp(){
-    cin >> k >> n >> m;
-    for (int i = 0; i <k; i++){
-        string word;
-        cin >> word;
-        dict.insert(word);
-    }
-    for (int i = 1; i <= n; i++){
-        for (int j = 1; j <= m; j++) cin >> a[i][j];
-    }
-    memset(visited, 0, sizeof(visited));
-}
+#Bài 1. Tập hợp có tổng bằng S
+#Begin
+def Try(sum, cnt, pos):
+    global ans
+    # Nếu đã đủ k phần tử và tổng bằng s, tăng biến đếm
+    if sum == s and cnt == k:
+        ans += 1
+        return
 
-dx= [-1, -1, -1, 0, 0, 1, 1, 1];
-dy = [-1, 0, 1, -1, 1, -1, 0, 1];
+    # Thử các số từ pos đến n
+    for j in range(pos, n + 1):
+        if sum + j <= s and cnt + 1 <= k:
+            Try(sum + j, cnt + 1, j + 1)
 
-void Try(int i, int j){
-    if(dict.count(s)) res.push_back(s);
-    for (int  = 0;  < 8; k++ ){
-        int i1 = i + dx[k], j1 = j + dy[k];
-        if(i1 >= 1 && i <= n && j1 >= 1 
-           && j1 <= m && visited[i1][j1] == 0){
-               s += a[i1][j1];
-               visited[i1][j1] = 1;
-               Try(i1, j1);
-               visited[i1][j1] = 0;
-               s.pop_back();
-           }
-    }
-}
+while True:
+    # Đọc các giá trị n, k, s
+    n, k, s = map(int, input().split())
+    if n == 0 and k == 0 and s == 0:
+        break
+
+    ans = 0  # Biến đếm số lượng tập hợp thỏa mãn
+    Try(0, 0, 1)
+    print(ans) 
+#End
 
 
-int main(){
-    int t; cin >> t;
-    while(t--){
-        inp();
-        in cnt = 0;
-        for (int i = 1; i <= n; i++){
-            for (int j = 1; j <= n; j++){
-                s = "" + a[i][j];
-                Try(i, j);
-            }
-        }
-        sort(res.begin(), res.end());
-        for(string x: res){
-            cout << x << " ";            
-        }
-    }
-}
+#Bài 2. In dãy số
+def Try(arr):
+    # Độ dài hiện tại của dãy
+    n = len(arr)
+    if n == 0:
+        return
 
-int X[100], n = 8, d1[100], d2[100], res = 0;
-int a[100][100];
+    # In dãy hiện tại
+    print("[", end="")
+    for i in range(n):
+        print(arr[i], end="")
+        if i < n - 1:
+            print(" ", end="")
+    print("]")
 
-void ktao(){
-    for (int i = 1; i <= n; i++){
-        for (int j = 1; j <= n; j++) cin >> a[i][j]
-    }
-    memset(cot, 0, sizeiof(cot));
-    memset(d1, 0, sizeiof(d1));
-    memset(2, 0, sizeiof(d2));
+    # Tạo dãy mới bằng cách cộng hai phần tử liên tiếp
+    new_arr = [arr[i] + arr[i + 1] for i in range(n - 1)]
+
+    # Gọi đệ quy cho dãy mới
+    Try(new_arr)
+
+
+# Đọc số lượng bộ test
+T = int(input())
+for _ in range(T):
+    # Đọc số phần tử của dãy
+    n = int(input())
+    # Đọc dãy số
+    arr = list(map(int, input().split()))
+
+    # Gọi hàm đệ quy để in tam giác đặc biệt
+    Try(arr)
+
+#Bài 3 in dãy 2
+#Begin
+def Try(arr, result):
+    # Độ dài hiện tại của dãy
+    n = len(arr)
+    if n == 0:
+        return
+
+    # Lưu dãy hiện tại vào danh sách kết quả
+    result.append(arr)
+
+    # Tạo dãy mới bằng cách cộng hai phần tử liên tiếp
+    new_arr = [arr[i] + arr[i + 1] for i in range(n - 1)]
+
+    # Gọi đệ quy cho dãy mới
+    Try(new_arr, result)
+
+
+# Đọc số lượng bộ test
+T = int(input())
+for _ in range(T):
+    # Đọc số phần tử của dãy
+    n = int(input())
+    # Đọc dãy số
+    arr = list(map(int, input().split()))
+
+    # Khởi tạo danh sách để lưu các hàng của tam giác
+    result = []
+    Try(arr, result)
+
+    # In kết quả từ dưới lên trên
+    for row in reversed(result):
+        print("[", end="")
+        print(", ".join(map(str, row)), end="")
+        print("]")
+#End
+
+#Begin
+from itertools import permutations
+
+# Đọc số lượng bộ test
+T = int(input())
+
+for _ in range(T):
+    # Đọc xâu ký tự
+    s = input().strip()
     
-}
+    # Tạo tất cả các hoán vị của xâu s
+    perm = sorted(set(permutations(s)))
+    
+    # In ra các hoán vị
+    for p in perm:
+        print("".join(p))
+    print()  # Dòng trống giữa các bộ test
+#end
 
-void Try(int i){
-    //di dat con hau o hang thu i 
-    for (int j = 1; j<= n; j++){
-        if (cot[j] == 0 && d1[i-j+n] == 0 && d2[i+j -1] == 0){
-            x[i] = j;
-            cot[j] = 1;
-            d1[i - j + n] = 1;
-            d1[i + j - 1] = 1;
-            if(i == n){
-                int sum = 0;
-                for (int k = 1; k <= n; k++){
-                    sum += a[k][x[k]];
-                }
-                res = max(res, sum);
-            }
-            Try(i + 1);
-            //back track
-            cot[j] = 0;
-            d1[i-j + n] = 0;
-            d2[i+j - 1] = 0;
-            
+#Bài 8. Di chuyển trong ma trận
+#Begin
+def inp():
+    global M, N, matrix
+    M, N = map(int, input().split())
+    # Đọc ma trận
+    matrix = []
+    for _ in range(M):
+        row = list(map(int, input().split()))
+        matrix.append(row)
+
+def Try(i, j):
+    global ans
+    # Nếu đã đến ô (M-1, N-1), tăng số đường đi
+    if i == M - 1 and j == N - 1:
+        ans += 1
+        return
+    
+    # Di chuyển xuống dưới
+    if i + 1 < N:
+        Try(i + 1, j)
+    
+    # Di chuyển sang phải
+    if j + 1 < M:
+        Try(i, j + 1)
+
+# Đọc số lượng bộ test
+T = int(input())
+for _ in range(T):
+    inp()  # Đọc ma trận
+    ans = 0
+    Try(0, 0)
+    print(ans)
+
+def inp():
+    global n, m, matrix
+    n, m = map(int, input().split())
+    matrix = []
+    for _ in range(n):
+        row = list(map(int, input().split()))
+        matrix.append(row)
+
+def Try(i, j, current_sum):
+    global ans
+    # Nếu đến ô (n-1, m-1), cập nhật tổng lớn nhất
+    if i == n - 1 and j == m - 1:
+        ans = max(ans, current_sum)
+        return
+
+    # Di chuyển xuống dưới nếu có thể
+    if i + 1 < n:
+        Try(i + 1, j, current_sum + matrix[i + 1][j])
+    
+    # Di chuyển sang phải nếu có thể
+    if j + 1 < m:
+        Try(i, j + 1, current_sum + matrix[i][j + 1])
+
+# Đọc dữ liệu đầu vào
+inp()
+ans = 0
+Try(0, 0, matrix[0][0])
+
+# In ra tổng lớn nhất
+print(ans)
+
+#End
+
+int n, m, ans = 0, a[105][105];
+void inp(){
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++){
+        for (int j = 1; j <= m; j++){
+            cin >> a[i][j];
         }
     }
-}
+} 
 
-int main(){
-    int t; cin >> t;
-    white(t--){
-        ktao();
-        res = 0;
-        Try(1);
-        cout << res << endl;
+
+void Try(int i, int j, int sum){
+    if(i == n && j == m){
+        ans = max(ans, sum); 
+        return;
+        
+    }
+    if(i + 1 <= n){
+        Try(i + 1, j, sum + a[i+1][j]);
+    }
+    if(j + 1 <= n){
+        Try(i, j + 1, sum + a[i + 1][j]);
     }
 }
+
+
+
+int main(){
+    int t;
+    cin >> t;
+    while(t--){
+        inp();    
+        ans = INT_MIN;
+        Try(1, 1, a[1][1]);
+        cout << ans << endl;    
+    }
+}
+
+
