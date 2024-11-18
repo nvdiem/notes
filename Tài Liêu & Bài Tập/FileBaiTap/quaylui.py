@@ -625,6 +625,212 @@ Try(0, 0, matrix[0][0])
 print(ans)
 
 #End
+def min_distance(x, y, visited):
+    # Nếu đã đến một ô nước (W), trả về khoảng cách = 0
+    if matrix[x][y] == 'W':
+        return 0
+
+    # Đặt giá trị ban đầu cho khoảng cách ngắn nhất là vô cực
+    min_dist = float('inf')
+
+    # Duyệt qua 4 hướng (lên, xuống, trái, phải)
+    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        nx, ny = x + dx, y + dy
+
+        # Kiểm tra điều kiện biên và tránh ô đã thăm
+        if 0 <= nx < M and 0 <= ny < N and not visited[nx][ny]:
+            # Đánh dấu ô hiện tại là đã thăm
+            visited[nx][ny] = True
+            # Tìm khoảng cách từ ô lân cận đến nước
+            dist = 1 + min_distance(nx, ny, visited)
+            # Cập nhật khoảng cách nhỏ nhất
+            min_dist = min(min_dist, dist)
+            # Bỏ đánh dấu để thử các nhánh khác
+            visited[nx][ny] = False
+
+    return min_dist
+
+# Đọc số lượng test case
+T = int(input())
+for _ in range(T):
+    # Đọc kích thước ma trận
+    M, N = map(int, input().split())
+
+    # Đọc ma trận
+    matrix = [input().strip() for _ in range(M)]
+
+    # Tổng khoảng cách từ tất cả ô đất đến nước
+    total_distance = 0
+
+    # Tìm khoảng cách nhỏ nhất từ mỗi ô đất
+    for i in range(M):
+        for j in range(N):
+            if matrix[i][j] == 'L':
+                # Tạo mảng visited để tránh lặp lại các ô
+                visited = [[False] * N for _ in range(M)]
+                visited[i][j] = True
+                # Tìm khoảng cách nhỏ nhất từ ô (i, j) đến nước
+                total_distance += min_distance(i, j, visited)
+
+    # In kết quả
+    print(total_distance)
+
+# cach 2
+def find_min_distance(x, y, current_dist, visited):
+    # Nếu đã đến một ô nước (W), trả về khoảng cách hiện tại
+    if matrix[x][y] == 'W':
+        return current_dist
+
+    # Nếu khoảng cách hiện tại vượt quá giá trị nhỏ nhất đã biết, dừng nhánh này
+    if current_dist >= memo[x][y]:
+        return float('inf')
+
+    # Cập nhật khoảng cách nhỏ nhất cho ô hiện tại
+    memo[x][y] = current_dist
+
+    # Tìm khoảng cách nhỏ nhất bằng cách thử tất cả các hướng
+    min_dist = float('inf')
+    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < M and 0 <= ny < N and not visited[nx][ny]:
+            visited[nx][ny] = True
+            dist = find_min_distance(nx, ny, current_dist + 1, visited)
+            min_dist = min(min_dist, dist)
+            visited[nx][ny] = False
+
+    return min_dist
+
+# Đọc số lượng test case
+T = int(input())
+for _ in range(T):
+    # Đọc kích thước ma trận
+    M, N = map(int, input().split())
+
+    # Đọc ma trận
+    matrix = [input().strip() for _ in range(M)]
+
+    # Tạo mảng memo để lưu khoảng cách nhỏ nhất
+    memo = [[float('inf')] * N for _ in range(M)]
+
+    # Tổng khoảng cách từ tất cả ô đất đến nước
+    total_distance = 0
+
+    # Tìm khoảng cách nhỏ nhất từ mỗi ô đất
+    for i in range(M):
+        for j in range(N):
+            if matrix[i][j] == 'L':
+                # Tạo mảng visited để tránh đi lại các ô đã thăm
+                visited = [[False] * N for _ in range(M)]
+                visited[i][j] = True
+                # Tính khoảng cách nhỏ nhất từ ô (i, j) đến nước
+                total_distance += find_min_distance(i, j, 0, visited)
+
+    # In kết quả
+    print(total_distance)
+# Đề bài: Tìm tất cả các đường đi từ góc trên trái đến góc dưới phải trong một mê cung
+# Cho một mê cung kích thước M x N, được biểu diễn dưới dạng ma trận nhị phân.
+
+# Giá trị 1 đại diện cho ô có thể đi qua.
+# Giá trị 0 đại diện cho ô bị chặn.
+# Tìm tất cả các đường đi từ ô bắt đầu (0, 0) đến ô đích (M-1, N-1). Một đường đi hợp lệ chỉ được phép di chuyển qua các ô có giá trị 1 và theo các hướng:
+
+# Sang phải.
+# Xuống dưới.
+# Nếu không có đường đi nào, trả về danh sách rỗng.
+cach 1
+def find_paths(x, y, path, visited):
+    # Nếu đã đến đích, thêm đường đi vào danh sách
+    if x == M - 1 and y == N - 1:
+        results.append(path)
+        return
+
+    # Các hướng di chuyển: sang phải (R), xuống dưới (D)
+    directions = [(0, 1, 'R'), (1, 0, 'D')]
+
+    for dx, dy, move in directions:
+        nx, ny = x + dx, y + dy
+
+        # Kiểm tra điều kiện biên và tính hợp lệ
+        if 0 <= nx < M and 0 <= ny < N and maze[nx][ny] == 1 and not visited[nx][ny]:
+            visited[nx][ny] = True
+            find_paths(nx, ny, path + move, visited)
+            visited[nx][ny] = False  # Quay lui
+
+# Đọc số lượng bộ test
+T = int(input())
+for _ in range(T):
+    # Đọc kích thước mê cung
+    M, N = map(int, input().split())
+
+    # Đọc mê cung
+    maze = [list(map(int, input().split())) for _ in range(M)]
+
+    # Khởi tạo danh sách kết quả và mảng visited
+    results = []
+    visited = [[False] * N for _ in range(M)]
+
+    # Nếu ô bắt đầu hoặc ô kết thúc bị chặn, không có đường đi
+    if maze[0][0] == 0 or maze[M-1][N-1] == 0:
+        print("No Path")
+    else:
+        visited[0][0] = True
+        find_paths(0, 0, "", visited)
+        if results:
+            for path in sorted(results):  # Sắp xếp kết quả theo thứ tự từ điển
+                print(path)
+        else:
+            print("No Path")
+
+cach 2
+def find_paths(x, y, path, visited):
+    # Nếu đã đến đích, thêm đường đi vào danh sách
+    if x == M - 1 and y == N - 1:
+        results.append(path)
+        return
+
+    # Các hướng di chuyển: sang phải (R), xuống dưới (D)
+    directions = [(0, 1, 'R'), (1, 0, 'D')]
+
+    for dx, dy, move in directions:
+        nx, ny = x + dx, y + dy
+
+        # Kiểm tra điều kiện biên và tính hợp lệ
+        if 0 <= nx < M and 0 <= ny < N and maze[nx][ny] == 1 and not visited[nx][ny]:
+            visited[nx][ny] = True
+            find_paths(nx, ny, path + move, visited)
+            visited[nx][ny] = False  # Quay lui
+
+# Đọc số lượng test case
+T = int(input())
+output = []  # Danh sách lưu tất cả kết quả để ghi ra file
+
+for _ in range(T):
+    # Đọc kích thước mê cung
+    M, N = map(int, input().split())
+
+    # Đọc mê cung
+    maze = [list(map(int, input().split())) for _ in range(M)]
+
+    # Khởi tạo danh sách kết quả và mảng visited
+    results = []
+    visited = [[False] * N for _ in range(M)]
+
+    # Nếu ô bắt đầu hoặc ô kết thúc bị chặn, không có đường đi
+    if maze[0][0] == 0 or maze[M-1][N-1] == 0:
+        output.append("No Path")
+    else:
+        visited[0][0] = True
+        find_paths(0, 0, "", visited)
+        if results:
+            output.extend(sorted(results))  # Ghi các đường đi đã sắp xếp
+        else:
+            output.append("No Path")
+    output.append("")  # Thêm dòng trống giữa các bộ test
+
+# Ghi kết quả ra file
+with open("output.txt", "w") as f:
+    f.write("\n".join(output))
+
 
 int n, m, ans = 0, a[105][105];
 void inp(){
