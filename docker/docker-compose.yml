@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  # PHP-FPM – Laravel
+  app:
+    build:
+      context: .  # Build context, trỏ tới thư mục gốc
+      dockerfile: Dockerfile  # Đường dẫn tới Dockerfile cần build
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    volumes:
+      - ./:/var/www/html
+      - vendor:/var/www/html/vendor
+      - storage:/var/www/html/storage
+
+
+volumes:
+  vendor:
+  storage:
