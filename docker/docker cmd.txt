@@ -1,0 +1,67 @@
+docker build -t bm_server_laravel:base .
+
+docker build -t my-laravel-app .
+
+docker run -d --name laravel-app -p 9001:9001 my-laravel-app
+
+# Dựa trên image base đã build sẵn (từ Dockerfile trước)
+FROM bm_server_laravel:base
+
+# 1. Copy toàn bộ source code Laravel vào container
+COPY . /var/www/html
+
+
+RUN rm -f /usr/local/etc/php-fpm.d/*.conf
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# 2. Cài đặt quyền cho storage và bootstrap/cache
+RUN mkdir -p storage bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
+
+# 3. Generate APP_KEY (chỉ cần nếu chưa có APP_KEY hoặc dùng môi trường dev)
+RUN grep -q '^APP_KEY=' .env || php artisan key:generate || true
+
+# 4. Cache config, route và view (giúp Laravel chạy nhanh hơn)
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache || true
+
+# 5. Mặc định khởi chạy PHP-FPM
+CMD ["php-fpm", "-F"]
+
+
+server {
+    listen 80;
+    server_name localhost;
+
+    # Phục vụ Laravel từ thư mục public
+    root /var/www/html/public;
+    index index.php index.html index.htm;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # Xử lý PHP thông qua PHP-FPM
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9001;  # Hoặc tên container nếu dùng Docker bridge network
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # Static files từ thư mục được Laravel ghi vào
+    location /shared/ {
+        alias /var/shared-nginx/;
+        autoindex on;
+    }
+
+    # Bảo mật: không cho truy cập file .env, v.v.
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}

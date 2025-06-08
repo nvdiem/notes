@@ -1,0 +1,74 @@
+FROM php:8.3-fpm
+
+ENV PHP_FPM_PORT=9001
+
+# 1. Cài đặt gói hệ thống cần thiết
+RUN apt-get update && apt-get install -y \
+    bash \
+    git \
+    curl \
+    unzip \
+    zip \
+    libzip-dev \
+    libonig-dev \
+    libicu-dev \
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libwebp-dev \
+    libfreetype6-dev \
+    libpq-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    zlib1g-dev \
+    libssl-dev \
+    pkg-config \
+    libcurl4-openssl-dev \
+    autoconf \
+    make \
+    g++ \
+    cpio \
+    rpm2cpio \
+    iproute2 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Cài đặt từng nhóm PHP extensions – tách nhỏ để debug dễ hơn
+
+# -- Nhóm xử lý ảnh
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) gd
+
+# -- Nhóm chuỗi, encoding, định dạng
+RUN docker-php-ext-install -j$(nproc) mbstring intl bcmath
+
+# -- Nhóm hệ thống
+RUN docker-php-ext-install -j$(nproc) pcntl zip xml opcache
+
+# -- Nhóm database
+RUN docker-php-ext-install -j$(nproc) pdo_mysql
+RUN docker-php-ext-install -j$(nproc) mysqli
+
+
+
+# -- Nhóm mở rộng khác
+RUN docker-php-ext-install -j$(nproc) soap
+
+# 3. Cài đặt và bật Redis (chỉ định version tương thích PHP 8.3)
+RUN pecl install redis && docker-php-ext-enable redis
+
+# 4. Cài đặt Composer từ multi-stage image (sạch và nhanh)
+COPY --from=composer:2.7 /usr/bin/composer /usr/local/bin/composer
+
+# 5. Cấu hình PHP-FPM lắng nghe TCP
+RUN sed -i "s|^listen = .*|listen = 0.0.0.0:${PHP_FPM_PORT}|" /usr/local/etc/php-fpm.d/www.conf \
+    && echo "clear_env = no" >> /usr/local/etc/php-fpm.d/www.conf
+
+# 6. Đặt thư mục làm việc mặc định cho Laravel
+WORKDIR /var/www/html
+
+# 7. Mở cổng PHP-FPM
+EXPOSE ${PHP_FPM_PORT}
+
+# 8. Lệnh khởi động container
+CMD ["php-fpm", "-F"]
