@@ -2,7 +2,14 @@ docker build -t bm_server_laravel:base .
 
 docker build -t my-laravel-app .
 
+composer require --dev laravel/dusk
+php artisan dusk:install
+php artisan dusk
+
+
 docker run -d --name laravel-app -p 9001:9001 my-laravel-app
+
+
 
 # Dựa trên image base đã build sẵn (từ Dockerfile trước)
 FROM bm_server_laravel:base
