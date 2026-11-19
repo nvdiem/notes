@@ -1,3 +1,6 @@
+https://nginx.org/packages/mainline/debian/pool/nginx/n/nginx/nginx_1.31.9-1~trixie_amd64.deb
+https://nginx.org/packages/mainline/ubuntu/pool/nginx/n/nginx/nginx_1.31.9-1~noble_amd64.deb
+
 FROM php:8.5-fpm
 
 COPY nginx_*.deb /tmp/
